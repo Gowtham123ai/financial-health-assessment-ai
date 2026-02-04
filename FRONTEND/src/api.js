@@ -1,5 +1,5 @@
 import axios from "axios";
-const API_BASE = "https://financial-health-backend.onrender.com";
+const API_BASE = "https://financial-health-assessment-ai.onrender.com/";
 
 export const uploadFile = (file, language, industry) => {
   const formData = new FormData();
