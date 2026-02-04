@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { uploadFile } from "./api";
 
-function Upload({ setResult }) {
+function Upload() {
   const [file, setFile] = useState(null);
   const [language, setLanguage] = useState("English");
   const [industry, setIndustry] = useState("Services");
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const submit = async () => {
     if (!file) {
@@ -12,41 +14,54 @@ function Upload({ setResult }) {
       return;
     }
 
-    const res = await uploadFile(file, language, industry);
-    setResult(res.data);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("language", language);
+    formData.append("industry", industry);
+
+    setLoading(true);
+
+    try {
+      const res = await uploadFile(formData);
+      setResult(res.data);
+    } catch (err) {
+      alert("Backend error. Check Render service.");
+      console.error(err);
+    }
+
+    setLoading(false);
   };
 
   return (
-    <div style={{ marginBottom: "20px" }}>
-      <input
-        type="file"
-        accept=".csv,.xlsx,.pdf"
-        onChange={e => setFile(e.target.files[0])}
-      />
+    <div className="card">
+      <input type="file" onChange={(e) => setFile(e.target.files[0])} />
 
-      <br /><br />
-
-      <label>Language: </label>
-      <select value={language} onChange={e => setLanguage(e.target.value)}>
-        <option value="English">English</option>
-        <option value="Hindi">Hindi</option>
+      <select onChange={(e) => setLanguage(e.target.value)}>
+        <option>English</option>
+        <option>Hindi</option>
       </select>
 
-      <br /><br />
-
-      <label>Industry: </label>
-      <select value={industry} onChange={e => setIndustry(e.target.value)}>
+      <select onChange={(e) => setIndustry(e.target.value)}>
+        <option>Services</option>
         <option>Manufacturing</option>
         <option>Retail</option>
-        <option>Services</option>
-        <option>Logistics</option>
-        <option>E-commerce</option>
         <option>Agriculture</option>
+        <option>E-commerce</option>
       </select>
 
-      <br /><br />
+      <button onClick={submit}>
+        {loading ? "Analyzing..." : "Analyze"}
+      </button>
 
-      <button onClick={submit}>Analyze</button>
+      {result && (
+        <div className="output">
+          <h3>Metrics</h3>
+          <pre>{JSON.stringify(result.metrics, null, 2)}</pre>
+
+          <h3>AI Insights</h3>
+          <pre>{result.ai_insights}</pre>
+        </div>
+      )}
     </div>
   );
 }
