@@ -19,7 +19,8 @@ An AI-powered platform that analyzes SME financial data to assess financial heal
 - Security: Encryption at rest & in transit
 
 ## Live Demo
-Frontend: https://dancing-tarsier-2b5d91.netlify.app
+Frontend: https://health-assessment-ai.netlify.app/
+backend: https://financial-health-assessment-ai.onrender.com
 
 ## How to Run Locally
 
