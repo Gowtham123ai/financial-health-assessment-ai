@@ -8,29 +8,30 @@ function Upload() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const submit = async () => {
-    if (!file) {
-      alert("Please select a file");
-      return;
-    }
+ const submit = async () => {
+  if (!file) {
+    alert("Please select a file");
+    return;
+  }
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("language", language);
-    formData.append("industry", industry);
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("language", language);
+  formData.append("industry", industry);
 
-    setLoading(true);
+  setLoading(true);
+  setResult(null); // 👈 clear old results
 
-    try {
-      const res = await uploadFile(formData);
-      setResult(res.data);
-    } catch (err) {
-      alert("Backend error. Check Render service.");
-      console.error(err);
-    }
+  try {
+    const res = await uploadFile(formData);
+    setResult(res.data);
+  } catch (err) {
+    alert("Failed to analyze. Backend may be sleeping.");
+    console.error(err);
+  }
 
-    setLoading(false);
-  };
+  setLoading(false);
+};
 
   return (
     <div className="card">
