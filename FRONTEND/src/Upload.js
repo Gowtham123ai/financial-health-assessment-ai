@@ -1,40 +1,33 @@
-import React, { useState } from "react";
-import { uploadFile } from "./api";
+import axios from "axios";
+import { useState } from "react";
 
-function Upload() {
+function Upload({ setResult }) {
   const [file, setFile] = useState(null);
   const [language, setLanguage] = useState("English");
   const [industry, setIndustry] = useState("Services");
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
 
- const submit = async () => {
-  if (!file) {
-    alert("Please select a file");
-    return;
-  }
+  const submit = async () => {
+    if (!file) {
+      alert("Please upload a file");
+      return;
+    }
 
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("language", language);
-  formData.append("industry", industry);
+    const formData = new FormData();
+    formData.append("file", file);
 
-  setLoading(true);
-  setResult(null); // 👈 clear old results
+    const response = await axios.post(
+      `${process.env.REACT_APP_API_URL}/upload/?language=${language}&industry=${industry}`,
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" }
+      }
+    );
 
-  try {
-    const res = await uploadFile(formData);
-    setResult(res.data);
-  } catch (err) {
-    alert("Failed to analyze. Backend may be sleeping.");
-    console.error(err);
-  }
-
-  setLoading(false);
-};
+    setResult(response.data);
+  };
 
   return (
-    <div className="card">
+    <div>
       <input type="file" onChange={(e) => setFile(e.target.files[0])} />
 
       <select onChange={(e) => setLanguage(e.target.value)}>
@@ -47,22 +40,9 @@ function Upload() {
         <option>Manufacturing</option>
         <option>Retail</option>
         <option>Agriculture</option>
-        <option>E-commerce</option>
       </select>
 
-      <button onClick={submit}>
-        {loading ? "Analyzing..." : "Analyze"}
-      </button>
-
-      {result && (
-        <div className="output">
-          <h3>Metrics</h3>
-          <pre>{JSON.stringify(result.metrics, null, 2)}</pre>
-
-          <h3>AI Insights</h3>
-          <pre>{result.ai_insights}</pre>
-        </div>
-      )}
+      <button onClick={submit}>Analyze</button>
     </div>
   );
 }
