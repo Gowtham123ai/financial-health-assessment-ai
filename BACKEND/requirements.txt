@@ -7,3 +7,5 @@ sqlalchemy
 psycopg2-binary
 openai
 cryptography
+pdfplumber
+openpyxl
